@@ -1,0 +1,6 @@
+J:\AI Apps\Deskout\bin\Release\net8.0-windows\win-x64\publish\Deskout.exe
+J:\AI Apps\Deskout\bin\Release\net8.0-windows\win-x64\publish\Assets\icon.ico
+J:\AI Apps\Deskout\bin\Release\net8.0-windows\win-x64\publish\Deskout.dll
+J:\AI Apps\Deskout\bin\Release\net8.0-windows\win-x64\publish\Deskout.deps.json
+J:\AI Apps\Deskout\bin\Release\net8.0-windows\win-x64\publish\Deskout.runtimeconfig.json
+J:\AI Apps\Deskout\bin\Release\net8.0-windows\win-x64\publish\Deskout.pdb

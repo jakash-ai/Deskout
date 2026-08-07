@@ -1,0 +1,404 @@
+<Window x:Class="Deskout.Views.ReminderWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:Deskout.Converters"
+        mc:Ignorable="d"
+        Title="Deskout - Before You Go" 
+        Height="620" Width="500"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True"
+        ShowInTaskbar="True">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:BooleanToBrushConverter x:Key="BooleanToBrushConverter"/>
+        <!-- Modern Scrollbar Styling -->
+        <Style x:Key="ModernScrollViewer" TargetType="{x:Type ScrollViewer}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid>
+                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"/>
+                            <ScrollBar x:Name="PART_VerticalScrollBar" 
+                                       Value="{TemplateBinding VerticalOffset}" 
+                                       Maximum="{TemplateBinding ScrollableHeight}" 
+                                       ViewportSize="{TemplateBinding ViewportHeight}" 
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                                       HorizontalAlignment="Right" 
+                                       Width="6"
+                                       Margin="0,0,2,0"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Dropdown / Split Button Styling -->
+        <Style x:Key="SplitLeftShutdownButton" TargetType="Button">
+            <Setter Property="Background" Value="#E53935"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="6,0,0,6" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="#D32F2F"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="border" Property="Background" Value="#33444444"/>
+                                <Setter Property="Foreground" Value="#888888"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SplitRightShutdownButton" TargetType="Button">
+            <Setter Property="Background" Value="#D32F2F"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="0,6,6,0" SnapsToDevicePixels="true">
+                            <Path Data="M 0,0 L 5,5 L 10,0" 
+                                  Stroke="White" 
+                                  StrokeThickness="2" 
+                                  StrokeStartLineCap="Round"
+                                  StrokeEndLineCap="Round"
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="#B71C1C"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="border" Property="Background" Value="#33444444"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="CancelButton" TargetType="Button">
+            <Setter Property="Background" Value="#2A2A2E"/>
+            <Setter Property="Foreground" Value="#E0E0E0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#44444C"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="#3E3E42"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#66666E"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Custom Checkbox Styling -->
+        <Style x:Key="CustomTaskCheckbox" TargetType="CheckBox">
+            <Setter Property="Background" Value="#1E1E24"/>
+            <Setter Property="BorderBrush" Value="#55555F"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <BulletDecorator Background="Transparent">
+                            <BulletDecorator.Bullet>
+                                <Border x:Name="Border" 
+                                        Width="24" Height="24" 
+                                        CornerRadius="6" 
+                                        Background="{TemplateBinding Background}" 
+                                        BorderBrush="{TemplateBinding BorderBrush}" 
+                                        BorderThickness="{TemplateBinding BorderThickness}">
+                                    <Grid>
+                                        <Path x:Name="CheckMark" 
+                                              Data="M 4,11 L 10,17 L 20,6" 
+                                              Stroke="#E53935" 
+                                              StrokeThickness="3" 
+                                              StrokeStartLineCap="Round" 
+                                              StrokeEndLineCap="Round"
+                                              Visibility="Collapsed"/>
+                                    </Grid>
+                                </Border>
+                            </BulletDecorator.Bullet>
+                            <ContentPresenter Margin="12,0,0,0" 
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                              RecognizesAccessKey="True"/>
+                        </BulletDecorator>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter TargetName="Border" Property="Background" Value="#2E1B1B"/>
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#E53935"/>
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                <Setter Property="Foreground" Value="#88888F"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="Border" Property="BorderBrush" Value="#E53935"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <!-- Acrylic / Neon Glowing Container -->
+    <Border Background="#121214" CornerRadius="16" BorderBrush="#252528" BorderThickness="1.5">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="25" Color="#000000" Opacity="0.65" ShadowDepth="4"/>
+        </Border.Effect>
+
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <!-- Header -->
+                <RowDefinition Height="Auto"/>
+                <!-- Tasks List -->
+                <RowDefinition Height="*"/>
+                <!-- Notes Area -->
+                <RowDefinition Height="Auto"/>
+                <!-- Developer Mode Alerts -->
+                <RowDefinition Height="Auto"/>
+                <!-- Footer Buttons -->
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- 1. HEADER -->
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="DESKOUT" FontSize="26" FontWeight="ExtraBold">
+                        <TextBlock.Foreground>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#FFFFFF" Offset="0.0"/>
+                                <GradientStop Color="#E53935" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </TextBlock.Foreground>
+                    </TextBlock>
+                    <TextBlock Text="Before you leave, review your checklists." FontSize="13" Foreground="#8E8E93" Margin="0,2,0,0"/>
+                </StackPanel>
+
+                <!-- Profile Tag & Settings Icon -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Background="#1E1E24" CornerRadius="12" Padding="10,5" Margin="0,0,10,0">
+                        <TextBlock Text="{Binding CurrentProfileName, FallbackValue='Office'}" Foreground="#E53935" FontSize="11" FontWeight="Bold"/>
+                    </Border>
+                    <Button Width="32" Height="32" Command="{Binding OpenSettingsCommand}" Background="#1E1E24" BorderThickness="0" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="16">
+                                    <Path Data="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.67,9.34,2.85,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.04,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" 
+                                          Fill="#8E8E93" Width="16" Height="16" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="border" Property="Background" Value="#2A2A32"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- 2. TASKS LIST -->
+            <Grid Grid.Row="1" Margin="0,0,0,15">
+                <ListBox ItemsSource="{Binding TasksForToday}" 
+                         Background="Transparent" 
+                         BorderThickness="0"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListBox.Resources>
+                        <Style TargetType="ScrollViewer" BasedOn="{StaticResource ModernScrollViewer}"/>
+                    </ListBox.Resources>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Focusable" Value="False"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox Content="{Binding Text}" 
+                                      IsChecked="{Binding IsChecked}" 
+                                      Command="{Binding DataContext.ToggleTaskCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                      Style="{StaticResource CustomTaskCheckbox}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+
+            <!-- 3. NOTES AREA -->
+            <Grid Grid.Row="2" Margin="0,0,0,15">
+                <StackPanel>
+                    <TextBlock Text="Leave a note for tomorrow:" FontSize="12" Foreground="#8E8E93" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                    <Border CornerRadius="8" Background="#1A1A1E" BorderBrush="#2F2F34" BorderThickness="1">
+                        <TextBox Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" 
+                                 Background="Transparent" 
+                                 BorderThickness="0" 
+                                 Foreground="White" 
+                                 FontSize="13" 
+                                 Height="60" 
+                                 AcceptsReturn="True" 
+                                 TextWrapping="Wrap" 
+                                 Padding="8"
+                                 CaretBrush="#E53935"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+
+            <!-- 4. DEVELOPER MODE PANEL -->
+            <Grid Grid.Row="3" Margin="0,0,0,15" Visibility="{Binding DeveloperMode, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                <Border Background="#16161A" BorderBrush="#25252A" BorderThickness="1" CornerRadius="8" Padding="12,10">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,6">
+                            <TextBlock Text="Developer Integration Status" FontSize="11" FontWeight="Bold" Foreground="#8E8E93" VerticalAlignment="Center"/>
+                            <Button Content="Refresh" Command="{Binding RefreshDetectionCommand}" HorizontalAlignment="Right" Background="Transparent" Foreground="#E53935" BorderThickness="0" FontSize="10" FontWeight="Bold" Cursor="Hand"/>
+                        </Grid>
+
+                        <WrapPanel Orientation="Horizontal" ItemWidth="195">
+                            <!-- Unity -->
+                            <StackPanel Orientation="Horizontal" Margin="0,3">
+                                <Ellipse Width="8" Height="8" Fill="{Binding Detection.UnityRunning, Converter={StaticResource BooleanToBrushConverter}, ConverterParameter='RedGreen'}" VerticalAlignment="Center"/>
+                                <TextBlock Text=" Unity Editor" FontSize="11" Foreground="White" Margin="4,0,0,0"/>
+                                <TextBlock Text=" (Open)" FontSize="10" Foreground="#E53935" Visibility="{Binding Detection.UnityRunning, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="2,0,0,0"/>
+                            </StackPanel>
+
+                            <!-- Unreal -->
+                            <StackPanel Orientation="Horizontal" Margin="0,3">
+                                <Ellipse Width="8" Height="8" Fill="{Binding Detection.UnrealRunning, Converter={StaticResource BooleanToBrushConverter}, ConverterParameter='RedGreen'}" VerticalAlignment="Center"/>
+                                <TextBlock Text=" Unreal Engine" FontSize="11" Foreground="White" Margin="4,0,0,0"/>
+                                <TextBlock Text=" (Open)" FontSize="10" Foreground="#E53935" Visibility="{Binding Detection.UnrealRunning, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="2,0,0,0"/>
+                            </StackPanel>
+
+                            <!-- Blender -->
+                            <StackPanel Orientation="Horizontal" Margin="0,3">
+                                <Ellipse Width="8" Height="8" Fill="{Binding Detection.BlenderRunning, Converter={StaticResource BooleanToBrushConverter}, ConverterParameter='RedGreen'}" VerticalAlignment="Center"/>
+                                <TextBlock Text=" Blender" FontSize="11" Foreground="White" Margin="4,0,0,0"/>
+                                <TextBlock Text=" (Open)" FontSize="10" Foreground="#E53935" Visibility="{Binding Detection.BlenderRunning, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="2,0,0,0"/>
+                            </StackPanel>
+
+                            <!-- Downloads -->
+                            <StackPanel Orientation="Horizontal" Margin="0,3">
+                                <Ellipse Width="8" Height="8" Fill="{Binding Detection.ActiveDownloads, Converter={StaticResource BooleanToBrushConverter}, ConverterParameter='RedGreen'}" VerticalAlignment="Center"/>
+                                <TextBlock Text=" Active Downloads" FontSize="11" Foreground="White" Margin="4,0,0,0"/>
+                                <TextBlock Text=" (Downloading)" FontSize="10" Foreground="#E53935" Visibility="{Binding Detection.ActiveDownloads, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="2,0,0,0"/>
+                            </StackPanel>
+                        </WrapPanel>
+
+                        <!-- Git & External drive text status -->
+                        <StackPanel Margin="0,4,0,0">
+                            <!-- Git Status -->
+                            <ItemsControl ItemsSource="{Binding Detection.UncommittedRepos}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Margin="0,2">
+                                            <TextBlock Text="✖" Foreground="#E53935" FontSize="11" FontWeight="Bold"/>
+                                            <TextBlock Text=" Git changes uncommitted: " FontSize="11" Foreground="#8E8E93" Margin="4,0,0,0"/>
+                                            <TextBlock Text="{Binding}" FontSize="11" Foreground="White" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- External Drives -->
+                            <ItemsControl ItemsSource="{Binding Detection.ConnectedRemovableDrives}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Margin="0,2">
+                                            <TextBlock Text="⚠" Foreground="#FFCC00" FontSize="11" FontWeight="Bold"/>
+                                            <TextBlock Text=" USB Drive connected: " FontSize="11" Foreground="#8E8E93" Margin="4,0,0,0"/>
+                                            <TextBlock Text="{Binding}" FontSize="11" Foreground="White" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Battery Warning -->
+                            <StackPanel Orientation="Horizontal" Margin="0,2" Visibility="{Binding Detection.OnBattery, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock Text="⚠" Foreground="#FFCC00" FontSize="11" FontWeight="Bold"/>
+                                <TextBlock Text=" On Battery Power: " FontSize="11" Foreground="#8E8E93" Margin="4,0,0,0"/>
+                                <TextBlock Text="{Binding Detection.BatteryPercent, StringFormat={}{0:P0}}" FontSize="11" Foreground="White" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- 5. FOOTER BUTTONS -->
+            <Grid Grid.Row="4" Margin="0,5,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/> <!-- Snooze -->
+                    <ColumnDefinition Width="Auto"/> <!-- Cancel -->
+                    <ColumnDefinition Width="Auto"/> <!-- Shutdown Split -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Snooze Button -->
+                <Button x:Name="SnoozeBtn" Content="Snooze..." Click="SnoozeBtn_Click" Style="{StaticResource CancelButton}" Grid.Column="1" Margin="0,0,12,0" Height="40"/>
+
+                <!-- Cancel Button -->
+                <Button Content="Cancel Shutdown" Command="{Binding CancelShutdownCommand}" Style="{StaticResource CancelButton}" Grid.Column="2" Margin="0,0,12,0" Height="40"/>
+
+                <!-- Split Shutdown Button -->
+                <Grid Grid.Column="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Content="Shutdown Anyway" 
+                            Command="{Binding ShutdownAnywayCommand}" 
+                            IsEnabled="{Binding IsShutdownAnywayEnabled}"
+                            Style="{StaticResource SplitLeftShutdownButton}" 
+                            Height="40"/>
+                    <Button x:Name="ShutdownOptionBtn" Click="ShutdownOptionBtn_Click" Style="{StaticResource SplitRightShutdownButton}" Grid.Column="1" Width="32" Height="40"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
