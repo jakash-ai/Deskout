@@ -105,23 +105,14 @@ namespace Deskout.Services
                 Name = "Office",
                 Tasks = new List<TaskItem>
                 {
-                    new() { Text = "Update zoho project", IsChecked = false, DaysOfWeek = mtwtfs, ReminderTime = "7:25 PM" },
-                    new() { Text = "Fill Zoho People Timesheet", IsChecked = false, DaysOfWeek = weekdays },
-                    new() { Text = "Push Git Changes", IsChecked = false, DaysOfWeek = weekdays },
-                    new() { Text = "Backup Current Work", IsChecked = false, DaysOfWeek = allDays },
-                    new() { Text = "Close Unreal/Unity Properly", IsChecked = false, DaysOfWeek = allDays }
+                    new() { Text = "Update zoho project", IsChecked = false, DaysOfWeek = mtwtfs, ReminderTime = "7:25 PM" }
                 }
             };
 
             var homeProfile = new Profile
             {
                 Name = "Home",
-                Tasks = new List<TaskItem>
-                {
-                    new() { Text = "Backup Photos", IsChecked = false, DaysOfWeek = allDays },
-                    new() { Text = "Sync OneDrive", IsChecked = false, DaysOfWeek = allDays },
-                    new() { Text = "Charge Laptop", IsChecked = false, DaysOfWeek = allDays }
-                }
+                Tasks = new List<TaskItem>()
             };
 
             config.Profiles.Add(officeProfile);

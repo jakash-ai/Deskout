@@ -386,7 +386,7 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="Task Description (Double Click to edit)" Foreground="#8E8E93" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/>
                                 <TextBlock Grid.Column="1" Text="Weekly Schedule (M T W T F S S)" Foreground="#8E8E93" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                <TextBlock Grid.Column="2" Text="Delete" Foreground="#8E8E93" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Text="Delete" Foreground="#8E8E93" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Grid>
                         </Border>
 
@@ -431,7 +431,7 @@
                                                             Foreground="#8E8E93" 
                                                             FontSize="12"
                                                             Cursor="Hand" 
-                                                            HorizontalAlignment="Right"
+                                                            HorizontalAlignment="Center"
                                                             VerticalAlignment="Center"/>
                                                 </Grid>
 
