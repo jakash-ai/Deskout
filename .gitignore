@@ -1,0 +1,15 @@
+# Build folders
+bin/
+obj/
+publish_setup/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# OS files
+Thumbs.db
+Desktop.ini

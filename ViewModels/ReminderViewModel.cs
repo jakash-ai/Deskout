@@ -96,10 +96,12 @@ namespace Deskout.ViewModels
         public ICommand SnoozeCommand { get; }
         public ICommand OpenSettingsCommand { get; }
         public ICommand RefreshDetectionCommand { get; }
+        public ICommand OpenTaskUrlCommand { get; }
 
         public Action? RequestClose { get; set; }
         public Action? RequestShowSettings { get; set; }
         public Action<string, string>? RequestShowToast { get; set; }
+        public Action? RequestShowReminder { get; set; }
 
         public ReminderViewModel(ConfigService configService, ShutdownService shutdownService, DetectionService detectionService)
         {
@@ -118,6 +120,7 @@ namespace Deskout.ViewModels
             SnoozeCommand = new RelayCommand(p => Snooze(p));
             OpenSettingsCommand = new RelayCommand(_ => OpenSettings());
             RefreshDetectionCommand = new RelayCommand(async _ => await RefreshDetectionAsync());
+            OpenTaskUrlCommand = new RelayCommand(p => OpenTaskUrl(p));
 
             LoadTasksAndNote();
         }
@@ -218,6 +221,7 @@ namespace Deskout.ViewModels
 
             // Notify user and pop up the window again if they are on the desktop
             RequestShowToast?.Invoke("Deskout Alert", "Snooze expired! Please complete your remaining tasks.");
+            RequestShowReminder?.Invoke();
         }
 
         private void OpenSettings()
@@ -241,6 +245,21 @@ namespace Deskout.ViewModels
             finally
             {
                 IsDetecting = false;
+            }
+        }
+
+        private void OpenTaskUrl(object? parameter)
+        {
+            if (parameter is TaskItem task && !string.IsNullOrWhiteSpace(task.CustomUrl))
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo(task.CustomUrl) { UseShellExecute = true });
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Failed to open task URL: {ex.Message}");
+                }
             }
         }
     }

@@ -21,7 +21,7 @@ namespace Deskout.Services
         public float BatteryPercent { get; set; }
 
         public bool HasWarnings => UnityRunning || UnrealRunning || BlenderRunning || PremiereRunning || 
-                                   ActiveDownloads || UncommittedRepos.Count > 0 || ConnectedRemovableDrives.Count > 0;
+                                   ActiveDownloads || UncommittedRepos.Count > 0 || ConnectedRemovableDrives.Count > 0 || OnBattery;
     }
 
     public class DetectionService

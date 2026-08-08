@@ -12,6 +12,121 @@
         ResizeMode="NoResize">
 
     <Window.Resources>
+        <!-- Modern ComboBox Styling (Theme-independent) -->
+        <Style x:Key="ModernComboBox" TargetType="ComboBox">
+            <Setter Property="Background" Value="#1E1E24"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#35353A"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid x:Name="MainGrid" SnapsToDevicePixels="true">
+                            <!-- Main Background Border -->
+                            <Border x:Name="Border" 
+                                    Background="{TemplateBinding Background}" 
+                                    BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="{TemplateBinding BorderThickness}" 
+                                    CornerRadius="6"/>
+                            
+                            <!-- Content presenter for selected value -->
+                            <ContentPresenter x:Name="ContentSite" 
+                                              IsHitTestVisible="False" 
+                                              Content="{TemplateBinding SelectionBoxItem}" 
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" 
+                                              Margin="{TemplateBinding Padding}" 
+                                              VerticalAlignment="Center" 
+                                              HorizontalAlignment="Left"/>
+                            
+                            <!-- Vector Arrow -->
+                            <Path x:Name="Arrow" 
+                                  Data="M 0,0 L 4,4 L 8,0" 
+                                  Stroke="White" 
+                                  StrokeThickness="1.5" 
+                                  HorizontalAlignment="Right" 
+                                  VerticalAlignment="Center" 
+                                  Margin="0,0,12,0"/>
+                            
+                            <!-- Popup Dropdown Container -->
+                            <Popup x:Name="PART_Popup" 
+                                   AllowsTransparency="true" 
+                                   Placement="Bottom" 
+                                   IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                                   Focusable="false" 
+                                   PopupAnimation="Slide">
+                                <Border x:Name="DropDownBorder" 
+                                        Background="#1E1E24" 
+                                        BorderBrush="#35353A" 
+                                        BorderThickness="1" 
+                                        CornerRadius="6" 
+                                        MinWidth="{Binding ActualWidth, ElementName=Border}" 
+                                        MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <ScrollViewer x:Name="DropDownScrollViewer" CanContentScroll="true">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                            
+                            <!-- Full-Width Invisible Dropdown Toggle ToggleButton -->
+                            <ToggleButton Background="Transparent" 
+                                          BorderThickness="0" 
+                                          ClickMode="Press" 
+                                          Focusable="false" 
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border Background="Transparent"/>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="Height" Value="95"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderBrush" Value="#E53935"/>
+                            </Trigger>
+                            <Trigger Property="IsDropDownOpen" Value="true">
+                                <Setter Property="BorderBrush" Value="#E53935"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Background" Value="#1E1E24"/>
+                        <Setter Property="Foreground" Value="White"/>
+                        <Setter Property="Padding" Value="8,5"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ComboBoxItem">
+                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter TargetName="Bd" Property="Background" Value="#E53935"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="true">
+                                            <Setter TargetName="Bd" Property="Background" Value="#E53935"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Modern Scrollbar Styling -->
         <Style x:Key="ModernScrollViewer" TargetType="{x:Type ScrollViewer}">
             <Setter Property="Template">
@@ -184,7 +299,6 @@
                     <CheckBox Content="Start Automatically with Windows" IsChecked="{Binding StartWithWindows}" Style="{StaticResource SettingsSwitch}"/>
                     <CheckBox Content="Show on System Restart" IsChecked="{Binding ShowOnRestart}" Style="{StaticResource SettingsSwitch}"/>
                     <CheckBox Content="Show on System Sign-out/Logoff" IsChecked="{Binding ShowOnLogoff}" Style="{StaticResource SettingsSwitch}"/>
-                    <CheckBox Content="Developer Integration Mode" IsChecked="{Binding DeveloperMode}" Style="{StaticResource SettingsSwitch}"/>
 
                     <Border Height="1" Background="#252528" Margin="0,15"/>
                 </StackPanel>
@@ -239,20 +353,11 @@
                           ItemsSource="{Binding Profiles}" 
                           SelectedItem="{Binding SelectedProfile}" 
                           DisplayMemberPath="Name"
-                          Background="#1E1E24" 
-                          Foreground="White" 
-                          BorderBrush="#35353A"
+                          Style="{StaticResource ModernComboBox}"
                           FontSize="13"
                           Width="180" 
                           HorizontalAlignment="Left" 
-                          Height="30">
-                    <ComboBox.Resources>
-                        <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#1E1E24"/>
-                        <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="White"/>
-                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#E53935"/>
-                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="White"/>
-                    </ComboBox.Resources>
-                </ComboBox>
+                          Height="30"/>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
                     <Button Content="New Profile" Command="{Binding AddProfileCommand}" Style="{StaticResource SecondaryButton}" Margin="0,0,8,0"/>
@@ -290,46 +395,79 @@
                             <ItemsControl ItemsSource="{Binding Tasks}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border BorderBrush="#1F1F24" BorderThickness="0,0,0,1" Padding="12,8">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="220"/>
-                                                    <ColumnDefinition Width="50"/>
-                                                </Grid.ColumnDefinitions>
+                                        <Border BorderBrush="#1F1F24" BorderThickness="0,0,0,1" Padding="12,10">
+                                            <StackPanel>
+                                                <!-- Top Row: Description, Days, Delete -->
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="220"/>
+                                                        <ColumnDefinition Width="50"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    
+                                                    <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Background="Transparent" 
+                                                             BorderThickness="0" 
+                                                             Foreground="White" 
+                                                             FontSize="13" 
+                                                             VerticalAlignment="Center"
+                                                             CaretBrush="#E53935"/>
 
-                                                <!-- Description Input -->
-                                                <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" 
-                                                         Background="Transparent" 
-                                                         BorderThickness="0" 
-                                                         Foreground="White" 
-                                                         FontSize="13" 
-                                                         VerticalAlignment="Center"
-                                                         CaretBrush="#E53935"/>
+                                                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                                                        <CheckBox Content="M" IsChecked="{Binding IsMonday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
+                                                        <CheckBox Content="T" IsChecked="{Binding IsTuesday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
+                                                        <CheckBox Content="W" IsChecked="{Binding IsWednesday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
+                                                        <CheckBox Content="T" IsChecked="{Binding IsThursday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
+                                                        <CheckBox Content="F" IsChecked="{Binding IsFriday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
+                                                        <CheckBox Content="S" IsChecked="{Binding IsSaturday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
+                                                        <CheckBox Content="S" IsChecked="{Binding IsSunday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
+                                                    </StackPanel>
 
-                                                <!-- Days of Week Checklist -->
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                                                    <CheckBox Content="M" IsChecked="{Binding IsMonday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
-                                                    <CheckBox Content="T" IsChecked="{Binding IsTuesday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
-                                                    <CheckBox Content="W" IsChecked="{Binding IsWednesday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
-                                                    <CheckBox Content="T" IsChecked="{Binding IsThursday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
-                                                    <CheckBox Content="F" IsChecked="{Binding IsFriday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
-                                                    <CheckBox Content="S" IsChecked="{Binding IsSaturday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
-                                                    <CheckBox Content="S" IsChecked="{Binding IsSunday}" Style="{StaticResource DayCheckbox}" Margin="2,0"/>
-                                                </StackPanel>
+                                                    <Button Grid.Column="2" Content="✕" 
+                                                            Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                                            CommandParameter="{Binding}" 
+                                                            Background="Transparent" 
+                                                            BorderThickness="0" 
+                                                            Foreground="#8E8E93" 
+                                                            FontSize="12"
+                                                            Cursor="Hand" 
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Center"/>
+                                                </Grid>
 
-                                                <!-- Action Button -->
-                                                <Button Grid.Column="2" Content="✕" 
-                                                        Command="{Binding DataContext.DeleteTaskCommand, RelativeSource={RelativeSource AncestorType=Window}}" 
-                                                        CommandParameter="{Binding}" 
-                                                        Background="Transparent" 
-                                                        BorderThickness="0" 
-                                                        Foreground="#8E8E93" 
-                                                        FontSize="12"
-                                                        Cursor="Hand" 
-                                                        HorizontalAlignment="Right"
-                                                        VerticalAlignment="Center"/>
-                                            </Grid>
+                                                <!-- Bottom Row: Task-specific Reminder Time and Custom URL -->
+                                                <Grid Margin="0,6,0,0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/> <!-- Time Label -->
+                                                        <ColumnDefinition Width="Auto"/> <!-- Time Dropdowns -->
+                                                        <ColumnDefinition Width="Auto"/> <!-- URL Label -->
+                                                        <ColumnDefinition Width="*"/>    <!-- URL TextBox -->
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <TextBlock Text="Reminder Time:" Foreground="#8E8E93" FontSize="11" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,15,0" VerticalAlignment="Center">
+                                                        <ComboBox ItemsSource="{Binding HourOptions}" 
+                                                                  SelectedItem="{Binding SelectedHour}" 
+                                                                  Width="45" Height="22" Padding="4,1" FontSize="11"
+                                                                  Style="{StaticResource ModernComboBox}"/>
+                                                        <TextBlock Text=":" Foreground="#8E8E93" FontSize="11" VerticalAlignment="Center" Margin="2,0"/>
+                                                        <ComboBox ItemsSource="{Binding MinuteOptions}" 
+                                                                  SelectedItem="{Binding SelectedMinute}" 
+                                                                  Width="45" Height="22" Padding="4,1" FontSize="11"
+                                                                  Style="{StaticResource ModernComboBox}"/>
+                                                        <ComboBox ItemsSource="{Binding AmPmOptions}" 
+                                                                  SelectedItem="{Binding SelectedAmPm}" 
+                                                                  Width="45" Height="22" Padding="4,1" FontSize="11" Margin="4,0,0,0"
+                                                                  Style="{StaticResource ModernComboBox}"/>
+                                                    </StackPanel>
+
+                                                    <TextBlock Grid.Column="2" Text="Task URL:" Foreground="#8E8E93" FontSize="11" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                                    <TextBox Grid.Column="3" Text="{Binding CustomUrl, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Background="#1E1E24" Foreground="White" BorderBrush="#2A2A30" BorderThickness="1" 
+                                                             Padding="4,2" FontSize="11" Height="22" CaretBrush="#E53935"
+                                                             ToolTip="Link to Zoho/custom project page"/>
+                                                </Grid>
+                                            </StackPanel>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

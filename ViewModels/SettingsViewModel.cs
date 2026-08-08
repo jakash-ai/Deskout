@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using Deskout.Models;
 using Deskout.Services;
+using Deskout.Helpers;
 
 namespace Deskout.ViewModels
 {
@@ -75,10 +76,105 @@ namespace Deskout.ViewModels
             set => ToggleDay(DayOfWeek.Sunday, value);
         }
 
+        private string _selectedHour = "--";
+        private string _selectedMinute = "00";
+        private string _selectedAmPm = "PM";
+
+        public System.Collections.Generic.List<string> HourOptions { get; } = new() { "--", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
+        public System.Collections.Generic.List<string> MinuteOptions { get; } = System.Linq.Enumerable.Range(0, 60).Select(i => i.ToString("D2")).ToList();
+        public System.Collections.Generic.List<string> AmPmOptions { get; } = new() { "AM", "PM" };
+
+        public string SelectedHour
+        {
+            get => _selectedHour;
+            set
+            {
+                if (SetField(ref _selectedHour, value))
+                {
+                    UpdateReminderTimeFromParts();
+                }
+            }
+        }
+
+        public string SelectedMinute
+        {
+            get => _selectedMinute;
+            set
+            {
+                if (SetField(ref _selectedMinute, value))
+                {
+                    UpdateReminderTimeFromParts();
+                }
+            }
+        }
+
+        public string SelectedAmPm
+        {
+            get => _selectedAmPm;
+            set
+            {
+                if (SetField(ref _selectedAmPm, value))
+                {
+                    UpdateReminderTimeFromParts();
+                }
+            }
+        }
+
         public TaskSettingsItem(TaskItem task, Action onChanged)
         {
             _task = task;
             _onChanged = onChanged;
+            ParseReminderTimeParts();
+        }
+
+        private void ParseReminderTimeParts()
+        {
+            if (string.IsNullOrWhiteSpace(_task.ReminderTime))
+            {
+                _selectedHour = "--";
+                _selectedMinute = "00";
+                _selectedAmPm = "PM";
+                return;
+            }
+
+            string timeStr = _task.ReminderTime.Trim();
+            try
+            {
+                int spaceIndex = timeStr.IndexOf(' ');
+                if (spaceIndex > 0)
+                {
+                    _selectedAmPm = timeStr.Substring(spaceIndex + 1).ToUpper() == "AM" ? "AM" : "PM";
+                    string timeParts = timeStr.Substring(0, spaceIndex);
+                    string[] hourMin = timeParts.Split(':');
+                    if (hourMin.Length >= 2)
+                    {
+                        _selectedHour = hourMin[0];
+                        string min = hourMin[1];
+                        if (min.Length == 1) min = "0" + min;
+                        _selectedMinute = min;
+                    }
+                }
+            }
+            catch
+            {
+                _selectedHour = "--";
+                _selectedMinute = "00";
+                _selectedAmPm = "PM";
+            }
+        }
+
+        private void UpdateReminderTimeFromParts()
+        {
+            if (_selectedHour == "--")
+            {
+                _task.ReminderTime = null;
+            }
+            else
+            {
+                _task.ReminderTime = $"{_selectedHour}:{_selectedMinute} {_selectedAmPm}";
+            }
+            OnPropertyChanged(nameof(ReminderTime));
+            _onChanged();
         }
 
         private bool HasDay(DayOfWeek day)
@@ -110,6 +206,34 @@ namespace Deskout.ViewModels
             OnPropertyChanged(nameof(IsFriday));
             OnPropertyChanged(nameof(IsSaturday));
             OnPropertyChanged(nameof(IsSunday));
+        }
+
+        public string? ReminderTime
+        {
+            get => _task.ReminderTime;
+            set
+            {
+                if (_task.ReminderTime != value)
+                {
+                    _task.ReminderTime = value;
+                    OnPropertyChanged(nameof(ReminderTime));
+                    _onChanged();
+                }
+            }
+        }
+
+        public string? CustomUrl
+        {
+            get => _task.CustomUrl;
+            set
+            {
+                if (_task.CustomUrl != value)
+                {
+                    _task.CustomUrl = value;
+                    OnPropertyChanged(nameof(CustomUrl));
+                    _onChanged();
+                }
+            }
         }
     }
 
@@ -290,13 +414,15 @@ namespace Deskout.ViewModels
 
         private void AddProfile()
         {
-            string profileName = Microsoft.VisualBasic.Interaction.InputBox("Enter Profile Name:", "New Profile", "Work");
+            string? profileName = WindowHelper.ShowInputDialog("New Profile", "Enter Profile Name:", "Work");
+            if (profileName == null) return;
             profileName = profileName.Trim();
             if (string.IsNullOrEmpty(profileName)) return;
 
             if (Profiles.Any(p => p.Name.Equals(profileName, StringComparison.OrdinalIgnoreCase)))
             {
-                MessageBox.Show("A profile with that name already exists.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var activeWin = WindowHelper.GetActiveWindow();
+                System.Windows.MessageBox.Show(activeWin ?? System.Windows.Application.Current.MainWindow, "A profile with that name already exists.", "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 return;
             }
 
@@ -312,8 +438,15 @@ namespace Deskout.ViewModels
             if (SelectedProfile == null || !CanDeleteProfile) return;
 
             var profileToDelete = SelectedProfile;
-            var confirmResult = MessageBox.Show($"Are you sure you want to delete profile '{profileToDelete.Name}'?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (confirmResult == DialogResult.Yes)
+            var activeWin = WindowHelper.GetActiveWindow();
+            var confirmResult = System.Windows.MessageBox.Show(
+                activeWin ?? System.Windows.Application.Current.MainWindow,
+                $"Are you sure you want to delete profile '{profileToDelete.Name}'?", 
+                "Confirm Delete", 
+                System.Windows.MessageBoxButton.YesNo, 
+                System.Windows.MessageBoxImage.Question
+            );
+            if (confirmResult == System.Windows.MessageBoxResult.Yes)
             {
                 int index = Profiles.IndexOf(profileToDelete);
                 Profiles.Remove(profileToDelete);
@@ -330,7 +463,8 @@ namespace Deskout.ViewModels
         {
             if (SelectedProfile == null) return;
 
-            string taskText = Microsoft.VisualBasic.Interaction.InputBox("Enter Task Details:", "New Task", "");
+            string? taskText = WindowHelper.ShowInputDialog("New Task", "Enter Task Details:", "");
+            if (taskText == null) return;
             taskText = taskText.Trim();
             if (string.IsNullOrEmpty(taskText)) return;
 
@@ -349,9 +483,21 @@ namespace Deskout.ViewModels
         {
             if (SelectedProfile == null || parameter is not TaskSettingsItem taskWrapper) return;
 
-            SelectedProfile.Tasks.Remove(taskWrapper.Model);
-            Tasks.Remove(taskWrapper);
-            SaveSettings();
+            var activeWin = WindowHelper.GetActiveWindow();
+            var confirmResult = System.Windows.MessageBox.Show(
+                activeWin ?? System.Windows.Application.Current.MainWindow,
+                $"Are you sure you want to delete the task \"{taskWrapper.Text}\"?",
+                "Confirm Delete Task",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Warning
+            );
+
+            if (confirmResult == System.Windows.MessageBoxResult.Yes)
+            {
+                SelectedProfile.Tasks.Remove(taskWrapper.Model);
+                Tasks.Remove(taskWrapper);
+                SaveSettings();
+            }
         }
 
         private void AddGitRepo()

@@ -34,7 +34,7 @@ namespace Deskout.Services
             bool block = HasIncompleteTasks?.Invoke() ?? false;
             if (block)
             {
-                Win32.ShutdownBlockReasonCreate(_hwnd, "Please complete your Deskout tasks before shutting down.");
+                Win32.ShutdownBlockReasonCreate(_hwnd, "Click 'Cancel' to view and complete your remaining tasks.");
             }
             else
             {
@@ -67,7 +67,7 @@ namespace Deskout.Services
                     _shutdownInitiated = true;
                     
                     // Register reason again just to be safe
-                    Win32.ShutdownBlockReasonCreate(hwnd, "Please complete your Deskout tasks before shutting down.");
+                    Win32.ShutdownBlockReasonCreate(hwnd, "Click 'Cancel' to view and complete your remaining tasks.");
                     
                     return IntPtr.Zero; // return false to block
                 }

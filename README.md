@@ -112,18 +112,79 @@ Everything is stored in a single JSON file located at:
 
 ## 🚀 Installation & Uninstallation
 
-### Installing Deskout
-1. Open a PowerShell console.
+### Option 1: Standalone Setup Installer (Recommended)
+1. Download and run the standalone **`DeskoutSetup.exe`** installer.
+2. Follow the setup wizard to install Deskout to your machine.
+*The setup wizard will install the application to `C:\Program Files\Deskout`, set up a Start Menu shortcut, configure Deskout to run automatically when Windows starts, and start the app in the system tray.*
+
+### Option 2: Script-based Installation (For Developers)
+1. Open an elevated PowerShell console (run as Administrator).
 2. Run the installer script:
    ```powershell
    Set-ExecutionPolicy Bypass -Scope Process -Force
    .\install.ps1
    ```
-   *The script builds the project, copies it to `%LocalAppData%\Programs\Deskout\`, registers the startup registry keys, creates a Start Menu shortcut, and launches it in background mode.*
+   *This script builds the project, installs files to `C:\Program Files\Deskout`, registers the startup registry keys, creates a Start Menu shortcut, compiles the sharing installer, and launches Deskout in background mode.*
 
 ### Uninstalling Deskout
-1. Open PowerShell and run the uninstaller script:
-   ```powershell
-   .\uninstall.ps1
-   ```
-   *This stops any running instances and fully removes all files, shortcuts, and registry keys.*
+- **If installed via Setup Installer**: Use Windows **Apps & Features** (Settings) or **Control Panel** to uninstall Deskout.
+- **If installed via Script**: Open an elevated PowerShell console and run:
+  ```powershell
+  .\uninstall.ps1
+  ```
+  *This stops any running instances and fully removes all files, shortcuts, registry keys, and configurations.*
+
+---
+
+## 🏷️ Versioning & Git Release Guide
+
+Deskout versioning follows [Semantic Versioning](https://semver.org/) (e.g., `MAJOR.MINOR.PATCH`). 
+
+### 1. How to update the version locally
+Before releasing a new version, update it in these files:
+- **`Deskout.csproj`**: Update `<Version>`, `<AssemblyVersion>`, and `<FileVersion>` (e.g., `3.0.0`).
+- **`setup.iss`**: Update `AppVersion` (e.g., `3.0.0`).
+
+### 2. Guide to Release on Git for the first time
+Since you are releasing for the first time on Git, follow these steps to commit your code, create a tag, and publish a Release:
+
+#### Step A: Commit changes to Git
+Add the changes and commit them:
+```bash
+# Add all modified and untracked files
+git add .
+
+# Commit the files
+git commit -m "release: version 3.0.0 with installer and setup configs"
+```
+
+#### Step B: Push to your Remote Repository
+Push the commits to your remote repository (e.g., GitHub):
+```bash
+git push origin main
+```
+*(Replace `main` with your primary branch name if it is `master`.)*
+
+#### Step C: Tag the release
+Tag the commit with the version number:
+```bash
+# Create a signed or annotated tag
+git tag -a v3.0.0 -m "Release version 3.0.0"
+
+# Push the tag to GitHub
+git push origin v3.0.0
+```
+
+#### Step D: Create a GitHub Release and Upload the Installer
+1. Go to your repository page on GitHub.
+2. On the right side of the page, click on **Releases** (or click **Tags** and select **Releases**).
+3. Click **Draft a new release**.
+4. Choose the tag **`v3.0.0`** you just pushed.
+5. Title the release: **`Deskout v3.0.0`**.
+6. In the description, summarize the features (you can copy the features section from this README).
+7. Scroll down to the **Attach binaries** box and drag-and-drop the compiled setup file from your local computer:
+   - File path: `publish_setup/DeskoutSetup.exe`
+8. Click **Publish release**.
+
+Users will now be able to download `DeskoutSetup.exe` directly from the release page and install it without cloning the code or running scripts!
+
