@@ -65,7 +65,7 @@ namespace Deskout.Services
             var config = new AppConfig
             {
                 CurrentProfile = "Office",
-                ForceComplete = false,
+                ForceComplete = true,
                 ShowOnRestart = true,
                 ShowOnLogoff = true,
                 SnoozeDurationMinutes = 15,
@@ -84,6 +84,16 @@ namespace Deskout.Services
                 DayOfWeek.Friday
             };
 
+            var mtwtfs = new List<DayOfWeek>
+            {
+                DayOfWeek.Monday,
+                DayOfWeek.Tuesday,
+                DayOfWeek.Wednesday,
+                DayOfWeek.Thursday,
+                DayOfWeek.Friday,
+                DayOfWeek.Saturday
+            };
+
             var allDays = new List<DayOfWeek>
             {
                 DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday,
@@ -95,7 +105,7 @@ namespace Deskout.Services
                 Name = "Office",
                 Tasks = new List<TaskItem>
                 {
-                    new() { Text = "Update Zoho Projects", IsChecked = false, DaysOfWeek = weekdays },
+                    new() { Text = "Update zoho project", IsChecked = false, DaysOfWeek = mtwtfs, ReminderTime = "7:25 PM" },
                     new() { Text = "Fill Zoho People Timesheet", IsChecked = false, DaysOfWeek = weekdays },
                     new() { Text = "Push Git Changes", IsChecked = false, DaysOfWeek = weekdays },
                     new() { Text = "Backup Current Work", IsChecked = false, DaysOfWeek = allDays },

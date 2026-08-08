@@ -6,7 +6,7 @@ namespace Deskout.Models
     public class AppConfig
     {
         public string CurrentProfile { get; set; } = "Office";
-        public bool ForceComplete { get; set; }
+        public bool ForceComplete { get; set; } = true;
         public bool ShowOnRestart { get; set; } = true;
         public bool ShowOnLogoff { get; set; } = true;
         public int SnoozeDurationMinutes { get; set; } = 15;
