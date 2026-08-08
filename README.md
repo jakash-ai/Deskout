@@ -20,12 +20,11 @@ Deskout is a lightweight, premium Windows desktop utility built in **C# (.NET 8)
 * **Snooze Functionality:** Postpone reminders for 5, 15, 30, 60, or 120 minutes. It temporarily unblocks shutdown during the snooze period and reminds you when the timer expires.
 * **Windows Auto-Startup:** Toggle running in the background automatically when Windows starts.
 
-### 💻 V3: Developer Integration & Live Diagnostics
-* **Process Detection:** Checks if key developer processes (like Unity, Unreal Editor, Blender, and Adobe Premiere) are running and warns you.
-* **Active Downloads Check:** Scans your Downloads folder for active browser downloads (`*.crdownload` and `*.part` files) to prevent interrupting large downloads.
-* **Git Status Inspector:** Runs `git status` on configured directories and alerts you if there are uncommitted changes.
-* **External Drives Guard:** Warns if removable USB drives are still mounted.
-* **UPS/Battery Check:** Monitors power status and warns you if running on battery.
+### 🔔 V3: Task Schedules, Actions & Premium Dialogs
+* **Time-Specific Daily Reminders:** Schedule individual task reminders with an hour/minute AM/PM selector. A background timer displays the reminder window when the scheduled time hits.
+* **Auto-Open Custom URL Actions:** Optionally specify custom web addresses (URLs) for tasks that automatically launch in your default browser when the reminder triggers or manually from the UI.
+* **Premium Custom Dialogs:** Native WPF-styled `CustomInputDialog` window replaces legacy Visual Basic dialogue boxes for setting profiles and tasks under a consistent dark theme.
+* **Refined Window Stacking & Icons:** Embeds application icons properly through resource stream assets and sets settings modal ownership to prevent focus and display glitches.
 
 ---
 
